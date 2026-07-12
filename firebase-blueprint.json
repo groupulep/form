@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "SurveyQuestions": {
+      "title": "SurveyQuestions",
+      "description": "The configuration for the corporate survey questions.",
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "description": "List of survey questions"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["questions", "updatedAt"]
+    },
+    "WebhookConfig": {
+      "title": "WebhookConfig",
+      "description": "Webhook configuration for pushing responses.",
+      "type": "object",
+      "properties": {
+        "webhookUrl": {
+          "type": "string",
+          "description": "The target webhook URL"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["webhookUrl", "updatedAt"]
+    },
+    "SurveySettings": {
+      "title": "SurveySettings",
+      "description": "General settings for the survey.",
+      "type": "object",
+      "properties": {
+        "allowAnonymous": {
+          "type": "boolean",
+          "description": "Flag to allow or disallow anonymous users"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["allowAnonymous", "updatedAt"]
+    },
+    "SurveyResponse": {
+      "title": "SurveyResponse",
+      "description": "A single survey response from a user.",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "The name of the user who submitted the response"
+        },
+        "answers": {
+          "type": "object",
+          "description": "Key-value map of question IDs to user answers"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time of the submission"
+        }
+      },
+      "required": ["userName", "answers", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/config/survey_questions": {
+      "schema": {
+        "$ref": "#/entities/SurveyQuestions"
+      },
+      "description": "Holds the master list of active survey questions."
+    },
+    "/config/webhook": {
+      "schema": {
+        "$ref": "#/entities/WebhookConfig"
+      },
+      "description": "Stores the administrative webhook endpoint."
+    },
+    "/config/survey_settings": {
+      "schema": {
+        "$ref": "#/entities/SurveySettings"
+      },
+      "description": "Stores general settings such as anonymous mode state."
+    },
+    "/responses/{responseId}": {
+      "schema": {
+        "$ref": "#/entities/SurveyResponse"
+      },
+      "description": "Stores user answers and metadata."
+    }
+  }
+}

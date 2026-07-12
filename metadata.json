@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Encuestas Corporativas",
+  "description": "Una plataforma empresarial para realizar encuestas fáciles de responder, con editor de preguntas integrado, estadísticas visuales y exportación directa a Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
