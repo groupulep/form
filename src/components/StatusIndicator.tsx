@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDocFromServer } from "firebase/firestore";
 
 export default function StatusIndicator() {
   const [status, setStatus] = useState<"server" | "firebase" | "offline" | null>(null);
@@ -26,21 +26,13 @@ export default function StatusIndicator() {
       // Failed local check
     }
 
-    // 2. Fallback: check Firebase Cloud connection
+    // 2. Fallback: check Firebase Cloud connection using standard Firebase getDocFromServer
     try {
-      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      const timeoutId = controller ? setTimeout(() => controller.abort(), 3000) : null;
-      
-      // Quick lightweight options check to Google's Firestore endpoint to verify real connectivity
-      const res = await fetch("https://firestore.googleapis.com", {
-        method: "OPTIONS",
-        signal: controller ? controller.signal : undefined
-      });
-      
-      if (timeoutId) clearTimeout(timeoutId);
-      
+      const sDocRef = doc(db, "config", "survey_settings");
+      await getDocFromServer(sDocRef);
       setStatus("firebase");
     } catch (err) {
+      console.warn("StatusIndicator: Failed to connect to Firebase:", err);
       setStatus("offline");
     }
   };
