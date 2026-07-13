@@ -177,6 +177,10 @@ export default function App() {
     fetchSurveyConfig();
   }, []);
 
+  useEffect(() => {
+    document.title = companyName || "GROUP ULEP S.A.S";
+  }, [companyName]);
+
   const handleLogin = async (name: string, adminMode: boolean) => {
     setUserName(name);
     setIsAdmin(adminMode);
