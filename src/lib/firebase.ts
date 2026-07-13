@@ -77,7 +77,8 @@ export async function saveQuestionsToFirestore(questions: any[]) {
   const path = "config/survey_questions";
   try {
     const qDocRef = doc(db, "config", "survey_questions");
-    await setDoc(qDocRef, { questions, updatedAt: new Date().toISOString() });
+    const sanitizedQuestions = JSON.parse(JSON.stringify(questions));
+    await setDoc(qDocRef, { questions: sanitizedQuestions, updatedAt: new Date().toISOString() });
     return true;
   } catch (error: any) {
     if (error.code === "permission-denied" || error.message?.includes("permissions")) {
@@ -145,9 +146,10 @@ export async function saveResponseToFirestore(userName: string, answers: any) {
   const path = "responses";
   try {
     const responseCollection = collection(db, "responses");
+    const sanitizedAnswers = JSON.parse(JSON.stringify(answers));
     const docRef = await addDoc(responseCollection, {
       userName,
-      answers,
+      answers: sanitizedAnswers,
       timestamp: new Date().toISOString()
     });
     return docRef.id;
@@ -230,11 +232,15 @@ export async function clearResponsesFromFirestore() {
 }
 
 // Helper to save general settings to Firestore
-export async function saveSettingsToFirestore(allowAnonymous: boolean) {
+export async function saveSettingsToFirestore(allowAnonymous: boolean, companyName?: string) {
   const path = "config/survey_settings";
   try {
     const sDocRef = doc(db, "config", "survey_settings");
-    await setDoc(sDocRef, { allowAnonymous, updatedAt: new Date().toISOString() });
+    await setDoc(sDocRef, { 
+      allowAnonymous, 
+      companyName: companyName || "GROUP ULEP S.A.S", 
+      updatedAt: new Date().toISOString() 
+    });
     return true;
   } catch (error: any) {
     if (error.code === "permission-denied" || error.message?.includes("permissions")) {
@@ -252,7 +258,11 @@ export async function getSettingsFromFirestore() {
     const sDocRef = doc(db, "config", "survey_settings");
     const docSnap = await getDoc(sDocRef);
     if (docSnap.exists()) {
-      return docSnap.data().allowAnonymous !== false; // defaults to true if not set to false
+      const data = docSnap.data();
+      return {
+        allowAnonymous: data.allowAnonymous !== false,
+        companyName: data.companyName || "GROUP ULEP S.A.S"
+      };
     }
   } catch (error: any) {
     if (error.code === "permission-denied" || error.message?.includes("permissions")) {
@@ -260,7 +270,7 @@ export async function getSettingsFromFirestore() {
     }
     console.error("Error loading settings from Firestore:", error);
   }
-  return true; // default fallback
+  return { allowAnonymous: true, companyName: "GROUP ULEP S.A.S" }; // default fallback
 }
 
 

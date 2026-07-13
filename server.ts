@@ -46,6 +46,7 @@ interface SurveyData {
   webhookUrl?: string;
   templates?: SurveyTemplate[];
   allowAnonymous?: boolean;
+  companyName?: string;
 }
 
 // Default initial questions
@@ -110,6 +111,9 @@ function loadData(): SurveyData {
       if (data.allowAnonymous === undefined) {
         data.allowAnonymous = true;
       }
+      if (!data.companyName) {
+        data.companyName = "GROUP ULEP S.A.S";
+      }
       return data;
     }
   } catch (error) {
@@ -121,7 +125,8 @@ function loadData(): SurveyData {
     responses: [],
     webhookUrl: "",
     templates: [],
-    allowAnonymous: true
+    allowAnonymous: true,
+    companyName: "GROUP ULEP S.A.S"
   };
   saveData(initialData);
   return initialData;
@@ -148,18 +153,28 @@ app.get("/api/health", (req, res) => {
 // Settings GET/POST endpoints
 app.get("/api/survey/settings", (req, res) => {
   const data = loadData();
-  res.json({ allowAnonymous: data.allowAnonymous !== false });
+  res.json({ 
+    allowAnonymous: data.allowAnonymous !== false,
+    companyName: data.companyName || "GROUP ULEP S.A.S"
+  });
 });
 
 app.post("/api/survey/settings", (req, res) => {
-  const { allowAnonymous } = req.body;
+  const { allowAnonymous, companyName } = req.body;
   if (typeof allowAnonymous !== "boolean") {
     return res.status(400).json({ error: "allowAnonymous debe ser un booleano" });
   }
   const data = loadData();
   data.allowAnonymous = allowAnonymous;
+  if (companyName && typeof companyName === "string") {
+    data.companyName = companyName.trim();
+  }
   saveData(data);
-  res.json({ success: true, allowAnonymous: data.allowAnonymous });
+  res.json({ 
+    success: true, 
+    allowAnonymous: data.allowAnonymous,
+    companyName: data.companyName || "GROUP ULEP S.A.S"
+  });
 });
 
 // 1. Get entire survey structure and questions
@@ -340,6 +355,35 @@ app.delete("/api/survey/templates/:id", (req, res) => {
   data.templates = data.templates.filter((t) => t.id !== id);
   saveData(data);
   res.json({ success: true });
+});
+
+// 11. Update an existing survey template
+app.put("/api/survey/templates/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, description, questions } = req.body;
+  if (!name || !Array.isArray(questions)) {
+    return res.status(400).json({ error: "Faltan datos requeridos (name o questions)" });
+  }
+
+  const data = loadData();
+  if (!data.templates) {
+    data.templates = [];
+  }
+
+  const idx = data.templates.findIndex((t) => t.id === id);
+  if (idx === -1) {
+    return res.status(404).json({ error: "Plantilla no encontrada" });
+  }
+
+  data.templates[idx] = {
+    ...data.templates[idx],
+    name,
+    description: description || "",
+    questions
+  };
+
+  saveData(data);
+  res.json({ success: true, template: data.templates[idx] });
 });
 
 

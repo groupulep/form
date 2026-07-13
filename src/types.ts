@@ -28,4 +28,5 @@ export interface SurveyData {
   webhookUrl?: string;
   templates?: SurveyTemplate[];
   allowAnonymous?: boolean;
+  companyName?: string;
 }

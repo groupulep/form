@@ -20,11 +20,11 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
   if (questions.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <div className="bg-white p-10 rounded-[24px] shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-slate-200/50 max-w-sm text-center">
+        <div className="bg-white p-10 rounded-[24px] shadow-[0_8px_40px_rgba(139,92,246,0.04)] border border-slate-100 max-w-sm text-center">
           <CircleDashed className="w-10 h-10 text-slate-400 mx-auto mb-5 animate-[spin_3s_linear_infinite]" strokeWidth={1.5} />
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">No hay preguntas disponibles</h2>
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">No hay preguntas disponibles</h2>
           <p className="text-slate-500 mt-2 text-sm leading-relaxed">Por favor, contacte al administrador para añadir preguntas.</p>
-          <button onClick={onExit} className="mt-8 px-6 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 transition-colors">
+          <button onClick={onExit} className="mt-8 px-6 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-colors cursor-pointer">
             Volver al inicio
           </button>
         </div>
@@ -112,7 +112,7 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
   return (
     <div id="survey-screen-wrapper" className="min-h-screen bg-slate-50 flex flex-col items-center justify-center py-10 px-4 relative overflow-hidden font-sans">
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[800px] h-[800px] bg-white rounded-full blur-3xl opacity-60" />
+        <div className="w-[800px] h-[800px] bg-purple-50 rounded-full blur-3xl opacity-60" />
       </div>
 
       <div className="max-w-2xl w-full flex flex-col flex-grow z-10">
@@ -122,16 +122,16 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
             <div className="w-8 h-8 rounded-[10px] bg-purple-600 flex items-center justify-center shadow-sm">
               <ClipboardCheck className="w-4 h-4 text-white" strokeWidth={2} />
             </div>
-            <span className="font-semibold text-slate-900 tracking-tight">Encuesta Corporativa</span>
+            <span className="font-semibold text-slate-800 tracking-tight">Encuesta Corporativa</span>
           </div>
           <div className="text-xs font-medium px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-full flex items-center gap-2 shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
-            <span className="hidden sm:inline">Participante:</span> <strong className="text-slate-900 font-semibold">{userName}</strong>
+            <span className="hidden sm:inline">Participante:</span> <strong className="text-slate-800 font-semibold">{userName}</strong>
           </div>
         </header>
 
         {/* Main Container */}
-        <main className="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-slate-200/50 flex-grow flex flex-col overflow-hidden">
+        <main className="bg-white rounded-[32px] shadow-[0_8px_40px_rgba(139,92,246,0.04)] border border-slate-100 flex-grow flex flex-col overflow-hidden">
           <AnimatePresence mode="wait">
             {!submitted ? (
               <motion.div
@@ -148,9 +148,9 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                     <span>Pregunta {currentIndex + 1} de {questions.length}</span>
                     <span>{Math.round((currentIndex / questions.length) * 100)}%</span>
                   </div>
-                  <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden mb-12">
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-12">
                     <div
-                      className="h-full bg-purple-600 rounded-full transition-all duration-500 ease-out"
+                      className="h-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-full transition-all duration-500 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -159,12 +159,12 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                   <div className="space-y-4 mb-10">
                     <div className="flex items-start gap-3">
                       {currentQuestion.required && (
-                        <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-slate-100 text-slate-500 rounded-md">
+                        <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-purple-50 text-purple-600 rounded-md border border-purple-100">
                           Obligatoria
                         </span>
                       )}
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight leading-tight">
                       {currentQuestion.title}
                     </h2>
                     {currentQuestion.description && (
@@ -185,13 +185,13 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                             <button
                               key={star}
                               onClick={() => handleRatingSelect(star)}
-                              className="p-2 sm:p-3 rounded-2xl transition-all hover:bg-slate-50 focus:outline-none group active:scale-95"
+                              className="p-2 sm:p-3 rounded-2xl transition-all hover:bg-slate-100 focus:outline-none group active:scale-[0.97]"
                             >
                               <Star
                                 className={`w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300 ${
                                   isSelected
-                                    ? "fill-zinc-900 text-slate-900"
-                                    : "text-slate-300 group-hover:text-slate-400 stroke-1"
+                                    ? "fill-yellow-400 text-yellow-400 animate-pulse"
+                                    : "text-slate-300 group-hover:text-yellow-400 stroke-1"
                                 }`}
                               />
                             </button>
@@ -209,19 +209,19 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                             <button
                               key={idx}
                               onClick={() => handleSingleSelect(option)}
-                              className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between group ${
+                              className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                                 isSelected
-                                  ? "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-900/10"
+                                  ? "border-purple-600 bg-purple-50 text-purple-900 shadow-sm shadow-purple-100"
                                   : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-700"
                               }`}
                             >
-                              <span className="font-medium text-sm sm:text-base">{option}</span>
+                              <span className="font-semibold text-sm sm:text-base">{option}</span>
                               <div
                                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                  isSelected ? "border-white bg-white" : "border-slate-300 group-hover:border-slate-400"
+                                  isSelected ? "border-purple-600 bg-white" : "border-slate-300 group-hover:border-slate-400"
                                 }`}
                               >
-                                {isSelected && <div className="w-2 h-2 rounded-full bg-purple-600" />}
+                                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
                               </div>
                             </button>
                           );
@@ -238,19 +238,19 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                             <button
                               key={idx}
                               onClick={() => handleMultipleSelect(option)}
-                              className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between group ${
+                              className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                                 isSelected
-                                  ? "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-900/10"
+                                  ? "border-purple-600 bg-purple-50 text-purple-900 shadow-sm shadow-purple-100"
                                   : "border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-700"
                               }`}
                             >
-                              <span className="font-medium text-sm sm:text-base">{option}</span>
+                              <span className="font-semibold text-sm sm:text-base">{option}</span>
                               <div
                                 className={`w-6 h-6 rounded-[8px] border-2 flex items-center justify-center transition-colors ${
-                                  isSelected ? "border-white bg-white" : "border-slate-300 group-hover:border-slate-400 bg-transparent"
+                                  isSelected ? "border-purple-600 bg-purple-600 text-white" : "border-slate-300 group-hover:border-slate-400 bg-transparent"
                                 }`}
                               >
-                                {isSelected && <Check className="w-4 h-4 text-slate-900" strokeWidth={3} />}
+                                {isSelected && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
                               </div>
                             </button>
                           );
@@ -264,7 +264,7 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                         <MessageSquare className="absolute top-5 left-5 w-5 h-5 text-slate-400" />
                         <textarea
                           rows={5}
-                          className="w-full pl-14 pr-5 py-5 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 bg-slate-50/50 hover:bg-slate-50 text-slate-900 placeholder-zinc-400 transition-all text-sm sm:text-base resize-none leading-relaxed"
+                          className="w-full pl-14 pr-5 py-5 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-600 bg-slate-50 hover:bg-slate-50/80 text-slate-800 placeholder-slate-400 transition-all text-sm sm:text-base resize-none leading-relaxed shadow-inner"
                           placeholder="Escriba su respuesta aquí..."
                           value={answers[currentQuestion.id] || ""}
                           onChange={(e) => handleTextChange(e.target.value)}
@@ -280,7 +280,7 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                     {error && (
                       <motion.p
                         initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-                        className="text-xs text-rose-500 font-medium bg-rose-50 p-3 rounded-xl border border-rose-100 flex items-center"
+                        className="text-xs text-rose-500 font-semibold bg-rose-50 p-3 rounded-xl border border-rose-100 flex items-center"
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mr-2 shrink-0" />
                         {error}
@@ -292,10 +292,10 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                     <button
                       onClick={handleAnterior}
                       disabled={currentIndex === 0}
-                      className={`flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold transition-all ${
+                      className={`flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                         currentIndex === 0
                           ? "text-slate-300 cursor-not-allowed"
-                          : "text-slate-600 hover:bg-slate-100 active:scale-95"
+                          : "text-slate-500 hover:bg-slate-50 active:scale-95 text-slate-700"
                       }`}
                     >
                       <ArrowLeft className="w-4 h-4" />
@@ -305,7 +305,7 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                     <button
                       onClick={handleSiguiente}
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-8 py-3.5 rounded-2xl text-sm font-semibold text-white shadow-md bg-purple-600 hover:bg-purple-700 transition-all transform active:scale-95 disabled:opacity-50 group"
+                      className="flex items-center gap-2 px-8 py-3.5 rounded-2xl text-sm font-semibold text-white shadow-md bg-gradient-to-r from-purple-600 via-blue-600 to-emerald-500 hover:from-purple-500 hover:to-emerald-500 transition-all transform active:scale-95 disabled:opacity-50 group cursor-pointer"
                     >
                       {isSubmitting ? (
                         "Enviando..."
@@ -332,20 +332,20 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="p-12 text-center flex flex-col justify-center items-center flex-grow"
               >
-                <div className="w-20 h-20 bg-purple-600 rounded-[24px] flex items-center justify-center shadow-xl shadow-purple-900/10 mb-8 transform -rotate-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 via-blue-600 to-emerald-500 rounded-[24px] flex items-center justify-center shadow-xl shadow-purple-200 mb-8 transform -rotate-6">
                   <CheckCircle2 className="w-10 h-10 text-white" strokeWidth={2} />
                 </div>
-                <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+                <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">
                   ¡Encuesta Completada!
                 </h2>
                 <p className="text-slate-500 text-base max-w-sm mt-4 leading-relaxed">
-                  Gracias por su tiempo, <strong className="text-slate-900">{userName}</strong>. Sus respuestas han sido guardadas de forma segura y son vitales para nuestra mejora continua.
+                  Gracias por su tiempo, <strong className="text-slate-800">{userName}</strong>. Sus respuestas han sido guardadas de forma segura y son vitales para nuestra mejora continua.
                 </p>
 
                 <div className="mt-12 flex gap-4">
                   <button
                     onClick={onExit}
-                    className="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold rounded-2xl text-sm transition-all active:scale-95"
+                    className="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl text-sm transition-all active:scale-95 cursor-pointer"
                   >
                     Volver al Inicio
                   </button>
@@ -356,7 +356,7 @@ export default function SurveyScreen({ userName, questions, onSubmit, onExit }: 
         </main>
 
         {/* Footer */}
-        <footer className="text-center text-[11px] font-medium tracking-wide text-slate-400 mt-8 mb-4 uppercase">
+        <footer className="text-center text-[11px] font-semibold tracking-wide text-slate-400 mt-8 mb-4 uppercase">
           Plataforma Confidencial de Encuestas Corporativas
         </footer>
       </div>

@@ -48,8 +48,9 @@ service cloud.firestore {
     // Validates the structure of the Survey Settings document
     function isValidSurveySettings(data) {
       return data.keys().hasAll(['allowAnonymous', 'updatedAt']) 
-        && data.keys().size() == 2 
+        && (data.keys().size() == 2 || (data.keys().size() == 3 && data.keys().hasAll(['companyName'])))
         && data.allowAnonymous is bool
+        && (!data.keys().hasAll(['companyName']) || (data.companyName is string && data.companyName.size() <= 100))
         && data.updatedAt is string
         && data.updatedAt.size() <= 100;
     }
@@ -90,7 +91,8 @@ service cloud.firestore {
     // Rules for user survey response submissions
     match /responses/{responseId} {
       // Allow getting and listing of responses (needed for admin statistics/dashboard)
-      allow get, list: if isValidId(responseId);
+      allow get: if isValidId(responseId);
+      allow list: if true;
       
       // Allow submitting responses as long as the format is correct
       allow create: if isValidId(responseId) && isValidSurveyResponse(incoming());

@@ -43,6 +43,11 @@
           "type": "boolean",
           "description": "Flag to allow or disallow anonymous users"
         },
+        "companyName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Customizable company name to display"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time",

@@ -70,6 +70,7 @@ export default function App() {
   const [responses, setResponses] = useState<Response[]>([]);
   const [webhookUrl, setWebhookUrl] = useState("");
   const [allowAnonymous, setAllowAnonymous] = useState(true);
+  const [companyName, setCompanyName] = useState("GROUP ULEP S.A.S");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,13 +79,15 @@ export default function App() {
     try {
       setLoading(true);
 
-      // Load settings (allowAnonymous) from Firestore first
+      // Load settings (allowAnonymous & companyName) from Firestore first
       try {
         const fbSettings = await getSettingsFromFirestore();
-        setAllowAnonymous(fbSettings !== false);
-        localStorage.setItem("survey_allowAnonymous", JSON.stringify(fbSettings !== false));
+        setAllowAnonymous(fbSettings.allowAnonymous);
+        setCompanyName(fbSettings.companyName);
+        localStorage.setItem("survey_allowAnonymous", JSON.stringify(fbSettings.allowAnonymous));
+        localStorage.setItem("survey_companyName", fbSettings.companyName);
       } catch (err) {
-        console.warn("Fallo al obtener configuración de anonimato desde Firestore:", err);
+        console.warn("Fallo al obtener configuración desde Firestore:", err);
       }
       
       // 1. Try Firestore first
@@ -111,13 +114,15 @@ export default function App() {
         localStorage.setItem("survey_questions", JSON.stringify(loadedQs));
         localStorage.setItem("survey_webhookUrl", loadedWebhook);
 
-        // Also fetch allowAnonymous setting from backend
+        // Also fetch allowAnonymous and companyName setting from backend
         try {
           const settingsRes = await fetch("/api/survey/settings");
           if (settingsRes.ok) {
             const settingsData = await settingsRes.json();
             setAllowAnonymous(settingsData.allowAnonymous !== false);
+            setCompanyName(settingsData.companyName || "GROUP ULEP S.A.S");
             localStorage.setItem("survey_allowAnonymous", JSON.stringify(settingsData.allowAnonymous !== false));
+            localStorage.setItem("survey_companyName", settingsData.companyName || "GROUP ULEP S.A.S");
           }
         } catch {}
 
@@ -133,6 +138,7 @@ export default function App() {
       const cachedQs = localStorage.getItem("survey_questions");
       const cachedWebhook = localStorage.getItem("survey_webhookUrl") || "";
       const cachedAnon = localStorage.getItem("survey_allowAnonymous");
+      const cachedCompanyName = localStorage.getItem("survey_companyName");
 
       if (cachedQs) {
         try {
@@ -153,6 +159,12 @@ export default function App() {
         }
       } else {
         setAllowAnonymous(true);
+      }
+
+      if (cachedCompanyName) {
+        setCompanyName(cachedCompanyName);
+      } else {
+        setCompanyName("GROUP ULEP S.A.S");
       }
 
       setError(null); // Clear error, we work in offline fallback mode!
@@ -295,13 +307,16 @@ export default function App() {
     return true;
   };
 
-  const handleSaveSettings = async (anonEnabled: boolean): Promise<boolean> => {
+  const handleSaveSettings = async (anonEnabled: boolean, newCompanyName?: string): Promise<boolean> => {
+    const finalCompanyName = newCompanyName || companyName;
     setAllowAnonymous(anonEnabled);
+    setCompanyName(finalCompanyName);
     localStorage.setItem("survey_allowAnonymous", JSON.stringify(anonEnabled));
+    localStorage.setItem("survey_companyName", finalCompanyName);
 
     try {
       // 1. Save to Firebase
-      await saveSettingsToFirestore(anonEnabled);
+      await saveSettingsToFirestore(anonEnabled, finalCompanyName);
     } catch (fbErr) {
       console.warn("Error guardando configuración en Firebase:", fbErr);
     }
@@ -311,7 +326,7 @@ export default function App() {
       await fetch("/api/survey/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ allowAnonymous: anonEnabled })
+        body: JSON.stringify({ allowAnonymous: anonEnabled, companyName: finalCompanyName })
       });
     } catch (err) {
       console.warn("Error saving settings to local server, saved locally and Firebase:", err);
@@ -365,7 +380,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
           <RefreshCw className="w-8 h-8 text-purple-600 animate-spin" />
-          <p className="text-sm font-semibold text-slate-600">Iniciando plataforma empresarial...</p>
+          <p className="text-sm font-semibold text-slate-500">cargando encuesta</p>
         </div>
       </div>
     );
@@ -378,11 +393,11 @@ export default function App() {
           <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-500 mx-auto">
             <HelpCircle className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800">Error de Conexión</h2>
+          <h2 className="text-xl font-bold text-slate-900">Error de Conexión</h2>
           <p className="text-slate-500 text-sm leading-relaxed">{error}</p>
           <button
             onClick={fetchSurveyConfig}
-            className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl text-sm shadow transition-all"
+            className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-sm shadow transition-all cursor-pointer"
           >
             Reintentar Conexión
           </button>
@@ -396,7 +411,7 @@ export default function App() {
     return (
       <>
         <StatusIndicator />
-        <LoginScreen onLogin={handleLogin} allowAnonymous={allowAnonymous} />
+        <LoginScreen onLogin={handleLogin} allowAnonymous={allowAnonymous} companyName={companyName} />
       </>
     );
   }
@@ -410,6 +425,7 @@ export default function App() {
           initialResponses={responses}
           initialWebhookUrl={webhookUrl}
           initialAllowAnonymous={allowAnonymous}
+          initialCompanyName={companyName}
           onSaveQuestions={handleSaveQuestions}
           onSaveWebhook={handleSaveWebhook}
           onSaveSettings={handleSaveSettings}
